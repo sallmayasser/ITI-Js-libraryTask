@@ -77,14 +77,13 @@ function addBooks() {
 
 /////////////////////////////////// Table functions///////////////////////////////////
 
-// Draw the books in the table
 function drawTable(newBooks) {
   tableBody.innerHTML = "";
 
   newBooks.forEach((book) => {
     const tr = document.createElement("tr");
     const bookId = book.id;
-    console.log("bookid:", bookId);
+
     tr.innerHTML = `
     <td id="bookName-${bookId}"> ${book.name}</td>
     <td id = "price-${bookId}">${book.price}</td>
@@ -116,7 +115,6 @@ function getBookById(id) {
 
 function editBook(bookId, clickedRow) {
   const book = getBookById(bookId);
-  console.log(book);
   clickedRow.innerHTML = `
     <td>
       <input type="text" value="${book.name}" id="editBookName-${bookId}">
@@ -167,7 +165,7 @@ function saveData(bookId) {
   const isValid = ValidateTableDate(bookName, price, authorName, email, bookId);
 
   if (isValid) {
-    // drawTable(newBooks);
+   
     book.name = bookName;
     book.price = price;
     book.author.name = authorName;
@@ -335,7 +333,7 @@ function resetErrors() {
   document.getElementById("nameError").textContent = "";
   document.getElementById("bookError").textContent = "";
   document.getElementById("priceError").textContent = "";
-  // resetForm();
+ 
 }
 function resetTableErrors(bookId) {
   document.getElementById(`emailError-${bookId}`).textContent = "";

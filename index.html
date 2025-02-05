@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Library</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="numOfBooks" id="booksNumber">
+      <label> How Many Book ?</label>
+      <input type="number" name="numOfBooks" id="numOfBooks" required />
+      <button type="button" id="numBtn">Ok</button>
+      <span class="error" id="numberError"></span>
+      <!-- <button type="button" id="cancelBtn">Cancel</button> -->
+    </div>
+
+    <form id="bookForm">
+      <div>
+        <h2>Book</h2>
+      </div>
+      <div>
+        <label for="bookName">Name:</label>
+        <input
+          type="text"
+          min="0"
+          id="bookName"
+          name="bookName"
+          required
+        /><br />
+        <span class="error" id="bookError"></span>
+        <br /><br />
+      </div>
+      <div>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required /><br />
+        <span class="error" id="priceError"><br /></span><br /><br />
+      </div>
+      <div>
+        <h2>Author</h2>
+      </div>
+      <div>
+        <label for="authorName">Name:</label>
+        <input type="text" id="authorName" name="authorName" required /><br />
+        <span class="error" id="nameError"><br /> </span><br /><br />
+      </div>
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required /><br />
+        <span class="error" id="emailError"></span><br /><br /><br /><br />
+      </div>
+      <div class="buttons">
+        <button type="button" id="addBtn" name="addBtn">Add</button>
+        <button type="reset" id="resetBtn" name="resetBtn">Reset</button>
+      </div>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Author Name</th>
+          <th class="email">Author Email</th>
+          <th colspan="2">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be added dynamically here -->
+      </tbody>
+    </table>
+    <div class="table-controls" id="table-controls">
+      <button class="home" id="home">Add</button>
+      <button class="deleteAll" id="deleteAll">Delete All</button>
+      <button class="home" id="bookArr">Print Book Array</button>
+    </div>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

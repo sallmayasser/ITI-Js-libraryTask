@@ -48,9 +48,12 @@ function handleBookNumberInput() {
 
 function addBooks() {
   const bookName = document.getElementById("bookName").value.trim();
-  const price = document.getElementById("price").value.trim();
   const authorName = document.getElementById("authorName").value.trim();
   const email = document.getElementById("email").value.trim();
+  let price = document.getElementById("price").value.trim();
+  price = price.replace(/^0+(\d)/, "$1");
+  price = parseFloat(price).toFixed(2);
+
   if (numOfBooks <= 0) return;
 
   const isValid = ValidateDate(bookName, price, authorName, email);
@@ -62,9 +65,9 @@ function addBooks() {
     newBooks.push(newBook);
     numOfBooks--;
     drawTable(newBooks);
+    resetForm();
   }
 
-  resetForm();
   if (numOfBooks === 0) {
     form.style.display = "none";
     table.style.display = "table";
@@ -168,9 +171,12 @@ function cancelData() {
 }
 
 function deleteBook(index) {
-  newBooks.splice(index, 1);
-  tableBody.innerHTML = "";
-  drawTable(newBooks);
+  const isSure = confirm("Are you sure you want to delete All Books ");
+  if (isSure) {
+    newBooks.splice(index, 1);
+    tableBody.innerHTML = "";
+    drawTable(newBooks);
+  }
 }
 
 //////////////////////////////////// Helper Fuctions//////////////////////////////////////////////////
@@ -182,8 +188,11 @@ function showBookNumberInput() {
 
 function deleteAllBooks() {
   const tableBody = document.querySelector("table tbody");
-  tableBody.innerHTML = "";
-  newBooks = [];
+  const isSure = confirm("Are you sure you want to delete All Books ");
+  if (isSure) {
+    tableBody.innerHTML = "";
+    newBooks = [];
+  }
 }
 
 function printBooks() {
@@ -203,7 +212,7 @@ function saveOrCancelBook(row, index) {
 
 function ValidateDate(bookName, price, authorName, email) {
   let isValid = true;
-
+  resetErrors();
   const nameRegex = /^[A-Za-z ]+$/;
   if (!nameRegex.test(bookName)) {
     document.getElementById("bookError").textContent =
@@ -224,9 +233,9 @@ function ValidateDate(bookName, price, authorName, email) {
   }
 
   const priceRegex = /^(?!0\d)\d+(\.\d{1,2})?$/;
-  if (!priceRegex.test(price)) {
+  if (!priceRegex.test(price) || price <= 0) {
     document.getElementById("priceError").textContent =
-      "Please enter a valid price. It must be a positive number with up to two decimal places (e.g., 10, 10.99, 0.50). No leading zeros allowed (except 0.xx).";
+      "Invalid price. Enter a number greater than 0 with up to 2 decimal places (e.g., 1, 10.99, 0.50).";
     isValid = false;
   }
   return isValid;
@@ -269,7 +278,7 @@ function resetErrors() {
   document.getElementById("nameError").textContent = "";
   document.getElementById("bookError").textContent = "";
   document.getElementById("priceError").textContent = "";
-  resetForm();
+  // resetForm();
 }
 function resetTableErrors(index) {
   document.getElementById(`emailError-${index}`).textContent = "";

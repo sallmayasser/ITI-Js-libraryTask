@@ -166,12 +166,34 @@ function saveData(index) {
   }
 }
 
-function cancelData() {
-  drawTable(newBooks);
+// function cancelData() {
+//   drawTable(newBooks);
+// }
+function cancelData(index) {
+  const row = tableBody.children[index];
+  const book = newBooks[index];
+
+  row.innerHTML = `
+    <td>${book.name}</td>
+    <td>${book.price}</td>
+    <td>${book.author.name}</td>
+    <td>${book.author.email}</td>
+    <td>
+      <button class="editBtn">Edit</button>
+      <button class="deleteBtn">Delete</button>
+    </td>
+  `;
+
+  row
+    .querySelector(".editBtn")
+    .addEventListener("click", (e) => editBook(index, e));
+  row
+    .querySelector(".deleteBtn")
+    .addEventListener("click", () => deleteBook(index));
 }
 
 function deleteBook(index) {
-  const isSure = confirm("Are you sure you want to delete All Books ");
+  const isSure = confirm("Are you sure you want to delete this Book ");
   if (isSure) {
     newBooks.splice(index, 1);
     tableBody.innerHTML = "";
@@ -205,7 +227,9 @@ function saveOrCancelBook(row, index) {
     .querySelector("#confirmBtn")
     .addEventListener("click", () => saveData(index));
 
-  row.querySelector("#cancelBtn").addEventListener("click", cancelData);
+  row
+    .querySelector("#cancelBtn")
+    .addEventListener("click", () => cancelData(index));
 }
 
 ////////////////////////////////Validation Functions////////////////////////////////////

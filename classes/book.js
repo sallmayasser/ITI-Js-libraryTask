@@ -2,13 +2,17 @@ export class Book {
   #name;
   #price;
   #author;
+  #id;
 
   constructor(name, price, author) {
+    this.#id = Date.now();
     this.#name = name;
     this.#price = price;
     this.#author = author;
   }
-
+  get id() {
+    return this.#id;
+  }
   get name() {
     return this.#name;
   }

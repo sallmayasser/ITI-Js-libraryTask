@@ -64,11 +64,11 @@ function addBooks() {
     let newBook = new Book(bookName, price, newAuthor);
     newBooks.push(newBook);
     numOfBooks--;
-    drawTable(newBooks);
     resetForm();
   }
 
   if (numOfBooks === 0) {
+    drawTable(newBooks);
     form.style.display = "none";
     table.style.display = "table";
     tableController.style.display = "flex";
@@ -81,123 +81,157 @@ function addBooks() {
 function drawTable(newBooks) {
   tableBody.innerHTML = "";
 
-  newBooks.forEach((book, index) => {
+  newBooks.forEach((book) => {
     const tr = document.createElement("tr");
+    const bookId = book.id;
+    console.log("bookid:", bookId);
+    tr.innerHTML = `
+    <td id="bookName-${bookId}"> ${book.name}</td>
+    <td id = "price-${bookId}">${book.price}</td>
+    <td id = "authorName-${bookId}">${book.author.name}</td>
+    <td id="email-${bookId}">${book.author.email}</td>
+    <div class="tableButtons">
+      <td>
+      <button class="editBtn" id ="editBtn-${bookId}">Edit</button>
+      </td>
+      <td>
+      <button class="deleteBtn" id="deleteBtn-${bookId}">Delete</button>
+      </td>
+    </div>
+  `;
 
-    const bookData = [
-      book.name,
-      book.price,
-      book.author.name,
-      book.author.email,
-    ];
-
-    bookData.forEach((data) => {
-      const td = document.createElement("td");
-      td.textContent = data;
-      tr.appendChild(td);
-    });
-
-    const btnDiv = document.createElement("div");
-    btnDiv.className = "tableButtons";
-    btnDiv.appendChild(createTableButton("Edit", () => editBook(index, event)));
-    btnDiv.appendChild(createTableButton("Delete", () => deleteBook(index)));
-
-    tr.appendChild(btnDiv);
     tableBody.appendChild(tr);
+
+    const editBtn = tr.querySelector(`#editBtn-${bookId}`);
+    editBtn.addEventListener("click", () => editBook(bookId, tr));
+
+    const deleteBtn = tr.querySelector(`#deleteBtn-${bookId}`);
+    deleteBtn.addEventListener("click", () => deleteBook(bookId, tr));
   });
 }
 
-function createTableButton(text, onClick) {
-  const button = document.createElement("button");
-  button.textContent = text;
-  button.className = text.toLowerCase() + "Btn";
-  button.addEventListener("click", onClick);
-  return button;
+function getBookById(id) {
+  return newBooks.find((book) => book.id === id);
 }
 
-function editBook(index, e) {
-  const clickedRow = e.target.closest("tr");
-  const book = newBooks[index];
+function editBook(bookId, clickedRow) {
+  const book = getBookById(bookId);
+  console.log(book);
   clickedRow.innerHTML = `
     <td>
-      <input type="text" value="${book.name}" id="editBookName">
+      <input type="text" value="${book.name}" id="editBookName-${bookId}">
       <br />
-      <span class="error" id="bookError-${index}"></span>
+      <span class="error" id="bookError-${bookId}"></span>
     </td>
     <td>
-      <input type="number" value="${book.price}" id="editPrice">
+      <input type="number" value="${book.price}" id='editPrice-${bookId}'>
       <br />
-      <span class="error" id="priceError-${index}"></span>
+      <span class="error" id="priceError-${bookId}"></span>
     </td>
     <td>
-      <input type="text" value="${book.author.name}" id="editAuthorName">
+      <input type="text" value="${book.author.name}" id='editAuthorName-${bookId}'>
       <br />
-      <span class="error" id="nameError-${index}"></span>
+      <span class="error" id="nameError-${bookId}"></span>
     </td>
     <td>
-      <input type="email" value="${book.author.email}" id="editEmail">
+      <input type="email" value="${book.author.email}" id='editEmail-${bookId}'>
       <br />
-      <span class="error" id="emailError-${index}"></span>
+      <span class="error" id="emailError-${bookId}"></span>
+    </td>
+     <div class="tableButtons">
+    <td>
+      <button class="confirmBtn" id="confirmBtn-${bookId}">Confirm</button>
     </td>
     <td>
-      <button class="confirmBtn" id="confirmBtn">Confirm</button>
+      <button class="cancelBtn" id="cancelBtn-${bookId}">Cancel</button>
     </td>
-    <td>
-      <button class="cancelBtn" id="cancelBtn">Cancel</button>
-    </td>
+    </div>
   `;
-  saveOrCancelBook(clickedRow, index);
+  saveOrCancelBook(clickedRow, bookId);
 }
 
-function saveData(index) {
-  const bookName = document.getElementById("editBookName").value.trim();
-  const price = document.getElementById("editPrice").value.trim();
-  const authorName = document.getElementById("editAuthorName").value.trim();
-  const email = document.getElementById("editEmail").value.trim();
+function saveData(bookId) {
+  const book = getBookById(bookId);
+  const index = newBooks.indexOf(getBookById(bookId));
+  const bookName = document
+    .getElementById(`editBookName-${bookId}`)
+    .value.trim();
+  const price = document.getElementById(`editPrice-${bookId}`).value.trim();
+  const authorName = document
+    .getElementById(`editAuthorName-${bookId}`)
+    .value.trim();
+  const email = document.getElementById(`editEmail-${bookId}`).value.trim();
 
-  const isValid = ValidateTableDate(bookName, price, authorName, email, index);
+  const row = tableBody.children[index];
+
+  const isValid = ValidateTableDate(bookName, price, authorName, email, bookId);
 
   if (isValid) {
-    let newAuthor = new Author(authorName, email);
-    let newBook = new Book(bookName, price, newAuthor);
+    // drawTable(newBooks);
+    book.name = bookName;
+    book.price = price;
+    book.author.name = authorName;
+    book.author.email = email;
 
-    newBooks[index] = newBook;
-    drawTable(newBooks);
+    row.innerHTML = `
+    <td id="bookName-${bookId}"> ${book.name}</td>
+    <td id = "price-${bookId}">${book.price}</td>
+    <td id = "authorName-${bookId}">${book.author.name}</td>
+    <td id="email-${bookId}">${book.author.email}</td>
+     <div class="tableButtons">
+      <td>
+      <button class="editBtn" id ="editBtn-${bookId}">Edit</button>
+      </td>
+      <td>
+      <button class="deleteBtn" id="deleteBtn-${bookId}">Delete</button>
+      </td>
+    </div>
+    `;
   }
+
+  row
+    .querySelector(`#editBtn-${bookId}`)
+    .addEventListener("click", () => editBook(bookId, row));
+
+  row
+    .querySelector(`#deleteBtn-${bookId}`)
+    .addEventListener("click", () => deleteBook(bookId, row));
 }
 
-// function cancelData() {
-//   drawTable(newBooks);
-// }
-function cancelData(index) {
+function cancelData(bookId) {
+  const index = newBooks.indexOf(getBookById(bookId));
   const row = tableBody.children[index];
-  const book = newBooks[index];
+  const book = getBookById(bookId);
 
   row.innerHTML = `
     <td>${book.name}</td>
     <td>${book.price}</td>
     <td>${book.author.name}</td>
     <td>${book.author.email}</td>
-    <td>
-      <button class="editBtn">Edit</button>
-      <button class="deleteBtn">Delete</button>
-    </td>
+    <div class="tableButtons">
+      <td>
+      <button class="editBtn" id ="editBtn-${bookId}">Edit</button>
+       </td>
+      <td>
+      <button class="deleteBtn "id="deleteBtn-${bookId}">Delete</button>
+      </td>
+    </div>
   `;
 
   row
-    .querySelector(".editBtn")
-    .addEventListener("click", (e) => editBook(index, e));
+    .querySelector(`#editBtn-${bookId}`)
+    .addEventListener("click", () => editBook(bookId, row));
   row
-    .querySelector(".deleteBtn")
-    .addEventListener("click", () => deleteBook(index));
+    .querySelector(`#deleteBtn-${bookId}`)
+    .addEventListener("click", () => deleteBook(bookId, row));
 }
 
-function deleteBook(index) {
+function deleteBook(bookId, row) {
+  const index = newBooks.indexOf(getBookById(bookId));
   const isSure = confirm("Are you sure you want to delete this Book ");
   if (isSure) {
     newBooks.splice(index, 1);
-    tableBody.innerHTML = "";
-    drawTable(newBooks);
+    row.remove();
   }
 }
 
@@ -221,15 +255,14 @@ function printBooks() {
   console.log(newBooks);
 }
 
-function saveOrCancelBook(row, index) {
-  row;
+function saveOrCancelBook(row, bookId) {
   row
-    .querySelector("#confirmBtn")
-    .addEventListener("click", () => saveData(index));
+    .querySelector(`#confirmBtn-${bookId}`)
+    .addEventListener("click", () => saveData(bookId));
 
   row
-    .querySelector("#cancelBtn")
-    .addEventListener("click", () => cancelData(index));
+    .querySelector(`#cancelBtn-${bookId}`)
+    .addEventListener("click", () => cancelData(bookId));
 }
 
 ////////////////////////////////Validation Functions////////////////////////////////////
@@ -265,30 +298,30 @@ function ValidateDate(bookName, price, authorName, email) {
   return isValid;
 }
 
-function ValidateTableDate(bookName, price, authorName, email, index) {
+function ValidateTableDate(bookName, price, authorName, email, bookId) {
   let isValid = true;
-  resetTableErrors(index);
+  resetTableErrors(bookId);
 
   const nameRegex = /^[A-Za-z ]+$/;
   if (!nameRegex.test(bookName)) {
-    document.getElementById(`bookError-${index}`).textContent =
+    document.getElementById(`bookError-${bookId}`).textContent =
       "Please enter a valid book name contain only letters (A-Z a-z) and space.";
     isValid = false;
   }
   if (!nameRegex.test(authorName)) {
-    document.getElementById(`nameError-${index}`).textContent =
+    document.getElementById(`nameError-${bookId}`).textContent =
       " Please enter a valid author name contain only letters (A-Z a-z) and space.";
     isValid = false;
   }
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(email)) {
-    document.getElementById(`emailError-${index}`).textContent =
+    document.getElementById(`emailError-${bookId}`).textContent =
       "Please enter a valid email address (e.g., example@domain.com).";
     isValid = false;
   }
   const priceRegex = /^(?!0\d)\d+(\.\d{1,2})?$/;
   if (!priceRegex.test(price)) {
-    document.getElementById(`priceError-${index}`).textContent =
+    document.getElementById(`priceError-${bookId}`).textContent =
       "Please enter a valid price. It must be a positive number with up to two decimal places.";
     isValid = false;
   }
@@ -304,11 +337,11 @@ function resetErrors() {
   document.getElementById("priceError").textContent = "";
   // resetForm();
 }
-function resetTableErrors(index) {
-  document.getElementById(`emailError-${index}`).textContent = "";
-  document.getElementById(`nameError-${index}`).textContent = "";
-  document.getElementById(`bookError-${index}`).textContent = "";
-  document.getElementById(`priceError-${index}`).textContent = "";
+function resetTableErrors(bookId) {
+  document.getElementById(`emailError-${bookId}`).textContent = "";
+  document.getElementById(`nameError-${bookId}`).textContent = "";
+  document.getElementById(`bookError-${bookId}`).textContent = "";
+  document.getElementById(`priceError-${bookId}`).textContent = "";
 }
 
 function resetForm() {
